@@ -5,6 +5,23 @@ import matplotlib
 matplotlib.use('Agg')
 import mplfinance as mpf
 import os
+import threading
+from http.server import HTTPServer, BaseHTTPRequestHandler
+
+# Render Free Web Service Port Fix
+class DummyHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"Bot is active 24/7!")
+
+def run_web_server():
+    port = int(os.environ.get("PORT", 8080))
+    server = HTTPServer(('0.0.0.0', port), DummyHandler)
+    server.serve_forever()
+
+# Background Web Server Start
+threading.Thread(target=run_web_server, daemon=True).start()
 
 TOKEN = "8953307484:AAGLe3UcDueTtlZJ8PepEEjB4Oad588Qw2M"
 CHAT_ID = "5703031894"
@@ -64,7 +81,7 @@ def generate_chart(df, symbol, entry, tp, sl, tf_name):
         return None
 
 def scan_job():
-    send_telegram_text("🚀 *Trading Bot 24/7 Active!*\nScanning both Scalp (5M) & Swing (1H)...")
+    send_telegram_text("🚀 *Trading Bot 24/7 Active (Render Free Tier)!*\nScanning Scalp (5M) & Swing (1H)...")
     last_alert_time = {}
 
     while True:
